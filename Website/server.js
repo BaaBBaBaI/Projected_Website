@@ -1,9 +1,10 @@
 import express from 'express';
-
+import useragent from 'express-useragent';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
+app.use(useragent.express());
 
 // API endpoint to get a single random cat URL
 app.get('/api/random-cat', (_req, res) => {
@@ -13,6 +14,9 @@ app.get('/api/random-cat', (_req, res) => {
         ? `https://cataas.com/cat/gif?random=${stamp}`
         : `https://cataas.com/cat?width=400&random=${stamp}`;
     res.json({ url });
+});
+app.get('/api/check-mobile', function(req, res){
+    res.send(req.useragent.isMobile); // Sends true or false
 });
 
 // IMPORTANT: Bind to 0.0.0.0 for Render (not localhost)

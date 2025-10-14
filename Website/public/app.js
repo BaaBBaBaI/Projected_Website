@@ -3,7 +3,16 @@ const desktop = document.getElementById('desktop');
 let windowCounter = 0;
 const activeWindows = new Map();
 
-// --- Clock Function ---
+async function checkIfMobile() {
+    try {
+        const response = await fetch('/api/check-mobile');
+        const isMobile = await response.text();
+        return isMobile === 'true';
+    } catch (error) {
+    console.error('Cannot fetch check-mobile', error);}
+}
+
+
 function updateClock() {
     const clockElement = document.getElementById('clock');
     const currentTime = new Date();
@@ -16,11 +25,11 @@ function updateClock() {
     clockElement.textContent = `${hours}:${minutes} ${ampm}`;
 }
 
-// Update clock every second (only ONCE)
+
 setInterval(updateClock, 1000);
 updateClock();
 
-// --- Start Menu Elements (ONLY ONCE) ---
+
 const openMenuButton = document.getElementById('openmenu');
 const startMenu = document.getElementById('startMenu');
 
@@ -39,7 +48,7 @@ function closeMenu(e) {
     }
 }
 
-// Event listeners for start menu (ONLY ONCE)
+
 openMenuButton.addEventListener('click', toggleMenu);
 document.addEventListener('click', closeMenu);
 
@@ -86,7 +95,7 @@ async function createCatPopup() {
         const win = document.createElement('div');
         win.className = 'window';
         win.dataset.windowId = windowId;
-        win.style.width = '600px'; // Increased width
+        win.style.width = '600px';
         win.style.left = `${Math.random() * (window.innerWidth - 600) + 50}px`;
         win.style.top = `${Math.random() * (window.innerHeight - 500) + 50}px`;
         win.innerHTML = `
@@ -94,6 +103,7 @@ async function createCatPopup() {
                 <span class="title-bar-text">Cute Kitty №${windowId}</span>
                 <div class="title-bar-controls">
                     <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
                     <button aria-label="Close"></button>
                 </div>
             </div>
@@ -129,7 +139,12 @@ async function createCatPopup() {
         createTaskbarButton(windowId, win);
 
         // Store window reference
-        activeWindows.set(windowId, { element: win, minimized: false });
+        activeWindows.set(windowId, { element: win, minimized: false, maximized: false, originalStyle: {
+                width: win.style.width,
+                height: win.style.height,
+                left: win.style.left,
+                top: win.style.top
+            } });
 
         // Close button
         win.querySelector('.title-bar-controls button[aria-label=Close]').onclick = () => {
@@ -143,7 +158,16 @@ async function createCatPopup() {
             minimizeWindow(windowId);
         };
 
-        // Dragging functionality
+        win.querySelector('.title-bar-controls button[aria-label=Maximize]').onclick = () => {
+
+            maximizeWindow(windowId);
+        }
+
+        if (await checkIfMobile()) {
+
+            maximizeWindow(windowId);
+        }
+
         makeDraggable(win);
     } catch (error) {
         console.error('Error fetching cat image:', error);
@@ -193,8 +217,7 @@ if (goBtn) {
 
 }
 
-// Create taskbar button for window
-// Create taskbar button for window
+
 function createTaskbarButton(windowId, windowElement) {
     const taskbarMiddle = document.querySelector('.taskbar-middle');
     const button = document.createElement('button');
@@ -242,6 +265,32 @@ function minimizeWindow(windowId) {
     if (button) button.classList.remove('active');
 }
 
+function maximizeWindow(windowId) {
+
+    const windowData = activeWindows.get(windowId);
+    if (!windowData) return;
+
+    const win = windowData.element;
+
+    if (windowData.maximized) {
+
+        win.style.width = windowData.originalStyle.width;
+        win.style.height = windowData.originalStyle.height;
+        win.style.left = windowData.originalStyle.left;
+        win.style.top = windowData.originalStyle.top;
+        windowData.maximized = false;
+    } else {
+        win.style.width = '100vw';
+        win.style.height = 'calc(100vh - 35px)';
+        win.style.left = '0';
+        win.style.top = '0';
+        windowData.maximized = true;
+    }
+
+
+
+}
+
 // Restore window
 function restoreWindow(windowId) {
     const windowData = activeWindows.get(windowId);
@@ -262,7 +311,12 @@ function makeDraggable(win) {
 
     titleBar.addEventListener('mousedown', (e) => {
         if (e.target.classList.contains('close-button') ||
-            e.target.classList.contains('minimize-button')) return;
+            e.target.classList.contains('minimize-button') ||
+            e.target.hasAttribute('aria-label')) return;
+
+        const windowId = parseInt(win.dataset.windowId);
+        const windowData = activeWindows.get(windowId);
+        if (windowData && windowData.maximized) return;
 
         isDragging = true;
         offsetX = e.clientX - win.offsetLeft;
@@ -281,6 +335,7 @@ function makeDraggable(win) {
         isDragging = false;
         titleBar.style.cursor = 'grab';
     });
+
 }
 
 

@@ -578,7 +578,7 @@ input[type=range].has-box-indicator::-moz-range-thumb {
     background:#ece9d8;
     padding:3px;
     width: 600px; /* Larger default width */
-    max-width: 90vw;
+    max-width: 100vw;
 }
 .window fieldset {
     margin-bottom:9px
@@ -609,6 +609,8 @@ input[type=range].has-box-indicator::-moz-range-thumb {
 .window-body {
     padding: 8px;
     background: #ece9d8;
+    margin-left: 5px;
+    margin-right: 5px;
     min-height: auto;
     max-height: 70vh;
     overflow-y: auto;
@@ -804,6 +806,16 @@ menu[role=tablist].justified button {
     padding:0 0 3px;
     -webkit-font-smoothing:antialiased
 }
+
+.window.maximized {
+    border-radius: 0 !important;
+}
+
+.window.maximized .title-bar {
+    cursor: default !important;
+}
+
+
 .title-bar {
     font-family:Trebuchet MS;
     background:linear-gradient(180deg,#0997ff,#0053ee 8%,#0050ee 40%,#06f 88%,#06f 93%,#005bff 95%,#003dd7 96%,#003dd7);
