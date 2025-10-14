@@ -1,11 +1,11 @@
 import express from 'express';
 
 const app = express();
-
+const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
-
+// API endpoint to get a single random cat URL
 app.get('/api/random-cat', (_req, res) => {
     const isGif = Math.random() > 0.5;
     const stamp = Date.now();
@@ -15,6 +15,8 @@ app.get('/api/random-cat', (_req, res) => {
     res.json({ url });
 });
 
-
-export default app;
+// IMPORTANT: Bind to 0.0.0.0 for Render (not localhost)
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+});
 

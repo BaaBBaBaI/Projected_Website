@@ -1,9 +1,10 @@
 {
-  "name": "cat-explorer",
+  "name": "projected-website",
   "version": "1.0.0",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "node api/index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.0"
