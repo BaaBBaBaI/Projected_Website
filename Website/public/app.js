@@ -1,3 +1,12 @@
+
+// Minesweeper game initialization mginit
+const minesweeperCSS = document.createElement('link');
+minesweeperCSS.rel = 'stylesheet';
+minesweeperCSS.href = 'apps/Minesweeper/minesweeper.css';
+document.head.appendChild(minesweeperCSS);
+// end of mginit
+
+
 const goBtn = document.getElementById('goBtn');
 const desktop = document.getElementById('desktop');
 let windowCounter = 0;
@@ -52,6 +61,19 @@ function closeMenu(e) {
 openMenuButton.addEventListener('click', toggleMenu);
 document.addEventListener('click', closeMenu);
 
+
+
+const minesweeperBtn = document.getElementById('minesweeperBtn');
+if (minesweeperBtn) {
+    minesweeperBtn.addEventListener('click', () => {
+        createMinesweeperWindow();
+        if (startMenu.classList.contains('active')) {
+            startMenu.classList.remove('active');
+        }
+    });
+}
+
+
 // --- Help Popup ---
 async function helpPopup() {
     try {
@@ -91,6 +113,8 @@ async function createCatPopup() {
         const response = await fetch('https://api.thecatapi.com/v1/images/search');
         const data = await response.json();
         const catImageUrl = data[0].url;
+
+
 
         const win = document.createElement('div');
         win.className = 'window';
@@ -132,11 +156,12 @@ async function createCatPopup() {
 
         desktop.appendChild(win);
 
-        // Initialize tabs
+        desktop.appendChild(win);
+
         initializeTabs(win);
 
-        // Create taskbar button
-        createTaskbarButton(windowId, win);
+        createTaskbarButton(windowId, win, `Kitty №${windowId}`, 'assets/catpng.png');
+
 
         // Store window reference
         activeWindows.set(windowId, { element: win, minimized: false, maximized: false, originalStyle: {
@@ -175,6 +200,103 @@ async function createCatPopup() {
     }
 }
 
+// Minesweeper window
+async function createMinesweeperWindow() {
+    try {
+        const windowId = ++windowCounter;
+
+
+
+        const win = document.createElement('div');
+        win.className = 'window';
+        win.dataset.windowId = windowId;
+        win.style.width = 'auto';
+        win.style.left = `${Math.random() * (window.innerWidth - 400) + 50}px`;
+        win.style.top = `${Math.random() * (window.innerHeight - 500) + 50}px`;
+
+        win.innerHTML = `
+            <div class="title-bar">
+                <span class="title-bar-text">Minesweeper</span>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            
+            <div class="window-body">
+                <div class="minesweeper-container"></div>
+            </div>
+        `;
+
+        desktop.appendChild(win);
+
+        createTaskbarButton(windowId, win, `Minesweeper`, 'assets/minesweeper.png');
+
+        // Load and initialize Minesweeper
+        await loadScript('apps/Minesweeper/minesweeper.js');
+        const container = win.querySelector('.minesweeper-container');
+        const game = new MinesweeperGame(container, 'Beginner');
+
+        // Store game reference
+        activeWindows.set(windowId, {
+            element: win,
+            minimized: false,
+            maximized: false,
+            game: game,
+            originalStyle: {
+                height: win.style.height,
+                width: win.style.width,
+                left: win.style.left,
+                top: win.style.top
+            }
+        });
+
+        // Close button
+        win.querySelector('.title-bar-controls button[aria-label=Close]').onclick = () => {
+            game.destroy(); // Clean up timer
+            win.remove();
+            removeTaskbarButton(windowId);
+            activeWindows.delete(windowId);
+        };
+
+        // Minimize button
+        win.querySelector('.title-bar-controls button[aria-label=Minimize]').onclick = () => {
+            minimizeWindow(windowId);
+        };
+
+        // Maximize button
+        win.querySelector('.title-bar-controls button[aria-label=Maximize]').onclick = () => {
+            maximizeWindow(windowId);
+        };
+
+        if (await checkIfMobile()) {
+
+            maximizeWindow(windowId);
+        }
+
+        // Dragging functionality
+        makeDraggable(win);
+    } catch (error) {
+        console.error('Error creating Minesweeper:', error);
+    }
+}
+
+// Load Script
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+    });
+}
 
 function initializeTabs(windowElement) {
     const tabButtons = windowElement.querySelectorAll('menu[role="tablist"] button');
@@ -218,21 +340,20 @@ if (goBtn) {
 }
 
 
-function createTaskbarButton(windowId, windowElement) {
+function createTaskbarButton(windowId, windowElement, title = 'Window', iconSrc = null) {
     const taskbarMiddle = document.querySelector('.taskbar-middle');
     const button = document.createElement('button');
-    button.className = 'taskbar-window-button active'; // Start as active
+    button.className = 'taskbar-window-button active';
     button.dataset.windowId = windowId;
 
+    if (iconSrc) {
+        const buttonImage = document.createElement('img');
+        buttonImage.src = iconSrc;
+        buttonImage.className = 'barImage';
+        button.appendChild(buttonImage);
+    }
 
-
-    // button.textContent = `Kitty №${windowId}`;
-
-    const buttonImage = document.createElement('img');
-    buttonImage.src = "assets/catpng.png";
-    buttonImage.className = 'barImage';
-    button.appendChild(buttonImage);
-    button.append(`Kitty №${windowId}`);
+    button.append(title);
 
     button.onclick = () => {
         const windowData = activeWindows.get(windowId);
@@ -303,7 +424,7 @@ function restoreWindow(windowId) {
     if (button) button.classList.add('active');
 }
 
-// Make window draggable
+// drag enable
 function makeDraggable(win) {
     const titleBar = win.querySelector('.title-bar');
     let isDragging = false;

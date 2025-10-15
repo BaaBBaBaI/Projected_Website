@@ -1,0 +1,264 @@
+.minesweeper-game {
+    font-family: 'MS Sans Serif', 'Tahoma', sans-serif;
+    background: #c0c0c0;
+    padding: 6px;
+    user-select: none;
+    border: 3px ridge #fff;
+    display: inline-block; /* Shrink to content */
+}
+
+.minesweeper-container {
+    text-align: center; /* Centers inline-block content */
+    /*padding: 8px;*/
+}
+
+/* Header with counters and face */
+.mine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    background: #c0c0c0;
+    border-top: 2px solid #7b7b7b;
+    border-left: 2px solid #7b7b7b;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    margin-bottom: 6px;
+}
+
+/* LED-style digital displays */
+.mine-counter,
+.mine-timer {
+    background: #000;
+    padding: 4px 6px;
+    height: 23px;
+    min-width: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0;
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.digit-display {
+    width: 13px;
+    height: 23px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+/* Smiley face button */
+.mine-face {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7b7b7b;
+    border-bottom: 2px solid #7b7b7b;
+    background: #c0c0c0 center no-repeat;
+    background-size: 24px 24px;
+    cursor: pointer;
+}
+
+.mine-face:active {
+    border-top: 2px solid #7b7b7b;
+    border-left: 2px solid #7b7b7b;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    padding: 2px 0 0 2px;
+}
+
+/* Game board */
+.mine-board {
+    display: grid;
+    gap: 0;
+    background: #c0c0c0;
+    border-top: 3px solid #7b7b7b;
+    border-left: 3px solid #7b7b7b;
+    border-right: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+    margin-bottom: 6px;
+    width: fit-content; /* Shrink to content */
+}
+
+/* Individual cells */
+.mine-cell {
+    width: 16px;
+    height: 16px;
+    border: 0;
+    background: #c0c0c0 center no-repeat;
+    background-size: contain;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* Covered cell (unclicked) */
+.mine-cover {
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7b7b7b;
+    border-bottom: 2px solid #7b7b7b;
+    background-color: #c0c0c0;
+}
+
+.mine-cover:active {
+    border: 1px solid #7b7b7b;
+}
+
+/* Opened cell */
+.mine-open {
+    border: 1px solid #7b7b7b;
+    background-color: #bdbdbd;
+}
+
+/* Flag */
+.mine-flag {
+    background-image: url('../../assets/minesweeper/flag.png');
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7b7b7b;
+    border-bottom: 2px solid #7b7b7b;
+}
+
+/* Unknown (question mark) */
+.mine-unknown {
+    background-image: url('../../assets/minesweeper/question.png');
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7b7b7b;
+    border-bottom: 2px solid #7b7b7b;
+}
+
+/* Mine revealed */
+.mine-mine {
+    background-image: url('../../assets/minesweeper/mine-ceil.png');
+    background-color: #bdbdbd;
+    border: 1px solid #7b7b7b;
+}
+
+/* Mine that killed you */
+.mine-die {
+    background-image: url('../../assets/minesweeper/mine-death.png');
+    background-color: #ff0000;
+    border: 1px solid #7b7b7b;
+}
+
+/* Wrong flag */
+.mine-misflagged {
+    background-image: url('../../assets/minesweeper/misflagged.png');
+    background-color: #bdbdbd;
+    border: 1px solid #7b7b7b;
+}
+
+/* Number sprites */
+.mine-open[data-num="1"] {
+    background-image: url('../../assets/minesweeper/open1.png');
+}
+
+.mine-open[data-num="2"] {
+    background-image: url('../../assets/minesweeper/open2.png');
+}
+
+.mine-open[data-num="3"] {
+    background-image: url('../../assets/minesweeper/open3.png');
+}
+
+.mine-open[data-num="4"] {
+    background-image: url('../../assets/minesweeper/open4.png');
+}
+
+.mine-open[data-num="5"] {
+    background-image: url('../../assets/minesweeper/open5.png');
+}
+
+.mine-open[data-num="6"] {
+    background-image: url('../../assets/minesweeper/open6.png');
+}
+
+.mine-open[data-num="7"] {
+    background-image: url('../../assets/minesweeper/open7.png');
+}
+
+.mine-open[data-num="8"] {
+    background-image: url('../../assets/minesweeper/open8.png');
+}
+
+/* Difficulty controls */
+.mine-controls {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    padding-top: 5px;
+}
+
+.mine-controls button {
+    padding: 4px 12px;
+    font-family: 'MS Sans Serif', 'Tahoma', sans-serif;
+    font-size: 11px;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7b7b7b;
+    border-bottom: 2px solid #7b7b7b;
+    background: #c0c0c0;
+    cursor: pointer;
+}
+
+.mine-controls button:active {
+    border-top: 2px solid #7b7b7b;
+    border-left: 2px solid #7b7b7b;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    padding: 6px 10px 2px 14px;
+}
+
+
+.mine-controls button {
+    border:none;
+    background:#ece9d8;
+    box-shadow:inset -1px -1px #0a0a0a,inset 1px 1px #fff,inset -2px -2px grey,inset 2px 2px #dfdfdf;
+    border-radius:0;
+    min-width:75px;
+    min-height:23px;
+    padding:0 12px
+}
+.mine-controls button:not(:disabled).active,
+.mine-controls button:not(:disabled):active {
+    box-shadow:inset -1px -1px #fff,inset 1px 1px #0a0a0a,inset -2px -2px #dfdfdf,inset 2px 2px grey
+}
+.mine-controls button.focused,
+.mine-controls button:focus {
+    outline:1px dotted #000;
+    outline-offset:-4px
+}
+
+.mine-controls button {
+    font-family:"Pixelated MS Sans Serif",Arial;
+    -webkit-font-smoothing:antialiased;
+    font-size:11px;
+    box-sizing:border-box;
+    border:1px solid #003c74;
+    background:linear-gradient(180deg,#fff,#ecebe5 86%,#d8d0c4);
+    box-shadow:none;
+    border-radius:3px
+}
+.mine-controls button:not(:disabled).active,
+.mine-controls button:not(:disabled):active {
+    box-shadow:none;
+    background:linear-gradient(180deg,#cdcac3,#e3e3db 8%,#e5e5de 94%,#f2f2f1)
+}
+.mine-controls button:not(:disabled):hover {
+    box-shadow:inset -1px 1px #fff0cf,inset 1px 2px #fdd889,inset -2px 2px #fbc761,inset 2px -2px #e5a01a
+}
+.mine-controls button.focused,
+.mine-controls button:focus {
+    box-shadow:inset -1px 1px #cee7ff,inset 1px 2px #98b8ea,inset -2px 2px #bcd4f6,inset 1px -1px #89ade4,inset 2px -2px #89ade4
+}
+.mine-controls button::-moz-focus-inner {
+    border:0
+}

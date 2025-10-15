@@ -1412,7 +1412,7 @@ progress:not([value])::-moz-progress-bar:not([value]) {
 
 .start-menu {
     position: absolute;
-    bottom: 30px;
+    bottom: 33px;
     left: 0;
     width: 478px;
     height: 605px;
